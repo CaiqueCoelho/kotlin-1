@@ -18,7 +18,7 @@ class RestaurantAdapter(var lista: MutableList<Restaurant>) : RecyclerView.Adapt
     }
 
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) : PlaceViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaceViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.view_restaurant_item, parent, false)
         return PlaceViewHolder(view)
     }
@@ -28,8 +28,8 @@ class RestaurantAdapter(var lista: MutableList<Restaurant>) : RecyclerView.Adapt
             val name = itemView.findViewById<TextView>(R.id.name)
             val description = itemView.findViewById<TextView>(R.id.description)
 
-            name.setText(place.name)
-            description.setText(place.description)
+            name.text = place.name
+            description.text = place.description
         }
 
     }

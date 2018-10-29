@@ -18,27 +18,32 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
 
     private lateinit var restaurantDAO: RestaurantDAO
-    val lista: MutableList<Restaurant> = mutableListOf()
+    private val lista: MutableList<Restaurant> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         restaurantDAO = FactoryDAO.getPlaceDatabase(applicationContext)
 
-        addButton.setOnClickListener {
-            val intent = Intent(this, RestaurantFormActivity::class.java)
-            startActivityForResult(intent, 200)
+        addButton.setOnClickListener { setAddClickAction() }
+        recycleView.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = RestaurantAdapter(lista)
         }
-        recycleView.layoutManager = LinearLayoutManager(this)
-        recycleView.adapter = RestaurantAdapter(lista)
 
         loadPlaces()
 
     }
 
+    private fun setAddClickAction() {
+        val intent = Intent(this, RestaurantFormActivity::class.java)
+        startActivityForResult(intent, 200)
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK) {
-            val restaurant = Restaurant(data?.getStringExtra("name")?:"", data?.getStringExtra("description")?:"");
+            val restaurant = Restaurant(data?.getStringExtra("name")
+                    ?: "", data?.getStringExtra("description") ?: "")
             insertPlace(restaurant)
         }
     }
@@ -51,7 +56,7 @@ class MainActivity : AppCompatActivity() {
                     lista.clear()
                     lista.addAll(it)
                     recycleView.adapter.notifyDataSetChanged()
-                }
+                }.dispose()
     }
 
     private fun insertPlace(place: Restaurant) {
@@ -60,8 +65,8 @@ class MainActivity : AppCompatActivity() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     loadPlaces()
-                    Snackbar.make(mainContainer, "Restaurante adicionado com sucesso: " + place.name, Toast.LENGTH_SHORT).show()
-                }
+                    Snackbar.make(mainContainer, "Restaurante adicionado com sucesso: ${place.name}", Toast.LENGTH_SHORT).show()
+                }.dispose()
     }
 
 
